@@ -216,28 +216,6 @@
           </div>
           <div class="col m6 s12">
             <label>
-              <input type="checkbox" name="enable_backup_stale_sensor" id="enable_backup_stale_sensor"
-                class="filled-in checkbox-ha" />
-              <span>Enable Backup Staleness Sensor</span>
-              <br />
-              <span class="helper-text">Publishes a sensor, binary_sensor.backups_stale, indicating if there is a
-                problem uploading up or creating backups.</span>
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col m6 s12">
-            <label>
-              <input type="checkbox" name="enable_backup_state_sensor" id="enable_backup_state_sensor"
-                class="filled-in checkbox-ha" />
-              <span>Enable Backup State Sensor</span>
-              <br />
-              <span class="helper-text">Publishes a sensor, sensor.backup_state, with the status of existing
-                backups.</span>
-            </label>
-          </div>
-          <div class="col m6 s12">
-            <label>
               <input type="checkbox" name="send_error_reports" id="send_error_reports" class="filled-in checkbox-ha" />
               <span>Send Error Reports</span>
               <br />
@@ -675,19 +653,6 @@
                 this.  It can be specified in terms of hours, minutes and seconds (eg 2 hours, 100 minutes, 9 hours 30 seconds, etc) 
               </span>
             </div>
-          </div>
-          <div class="col s11 offset-s1">
-            <label>
-              <input type="checkbox" id="call_backup_snapshot" name="call_backup_snapshot"
-                class="filled-in checkbox-ha" />
-              <span>Use old sensor names/values with "snapshot" instead of "backup"</span>
-              <br />
-              <span class="helper-text">When checked, the addon's state and staleness sensors will be
-                published as binary_sensor.snapshots_stale and sensor.snapshot_backup and their
-                attributes will reference "snapshots" instead of "backups". <a target="_blank" rel="noreferrer"
-                  href="https://github.com/sabeechen/hassio-google-drive-backup/blob/master/hassio-google-drive-backup/BACKUP_AND_SNAPSHOT.md">
-                  See here</a> for a detailed explanation of why you might want this.</span>
-            </label>
           </div>
         </div>
       </form>

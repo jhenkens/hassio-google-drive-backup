@@ -59,8 +59,7 @@ UPGRADE_OPTIONS = {
     Setting.DEPRECTAED_BACKUP_TIME_OF_DAY: Setting.BACKUP_TIME_OF_DAY,
     Setting.DEPRECTAED_SPECIFY_BACKUP_FOLDER: Setting.SPECIFY_BACKUP_FOLDER,
     Setting.DEPRECTAED_NOTIFY_FOR_STALE_BACKUPS: Setting.NOTIFY_FOR_STALE_BACKUPS,
-    Setting.DEPRECTAED_ENABLE_BACKUP_STALE_SENSOR: Setting.ENABLE_BACKUP_STALE_SENSOR,
-    Setting.DEPRECTAED_ENABLE_BACKUP_STATE_SENSOR: Setting.ENABLE_BACKUP_STATE_SENSOR,
+
     Setting.DEPRECATED_BACKUP_PASSWORD: Setting.BACKUP_PASSWORD
 }
 
@@ -175,9 +174,6 @@ class Config():
                     final_config[UPGRADE_OPTIONS[setting]] = value
                 elif setting not in UPGRADE_OPTIONS:
                     final_config[setting] = value
-
-        if upgraded:
-            final_config[Setting.CALL_BACKUP_SNAPSHOT] = True
 
         # add in non-ui settings
         for setting in NON_UI_SETTING:

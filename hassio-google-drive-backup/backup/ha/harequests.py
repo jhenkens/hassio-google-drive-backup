@@ -73,7 +73,7 @@ class HaRequests():
 
     def supportsBackupPaths(self):
         return not self._super_version or self._super_version >= VERSION_BACKUP_PATH
-    
+
     @property
     def supportsMountInfo(self):
         return not self._super_version or self._super_version >= VERSION_MOUNT_INFO
@@ -314,26 +314,6 @@ class HaRequests():
         }
         await self._postHaData("services/persistent_notification/dismiss", data)
 
-    async def updateBackupStaleSensor(self, state: bool) -> None:
-        if self.config.get(Setting.CALL_BACKUP_SNAPSHOT):
-            data: Dict[str, Any] = {
-                "state": state,
-                "attributes": {
-                    "friendly_name": "Snapshots Stale",
-                    "device_class": "problem"
-                }
-            }
-            await self._postHaData("states/binary_sensor." + NECESSARY_OLD_BACKUP_PLURAL_NAME + "_stale", data)
-        else:
-            data: Dict[str, Any] = {
-                "state": state,
-                "attributes": {
-                    "friendly_name": "Backups Stale",
-                    "device_class": "problem"
-                }
-            }
-            await self._postHaData("states/binary_sensor.backups_stale", data)
-
     @supervisor_call
     async def updateConfig(self, config):
         return await self._postHassioData(self.getSupervisorURL().with_path("addons/self/options"), {'options': config})
@@ -341,6 +321,3 @@ class HaRequests():
     @supervisor_call
     async def updateAddonOptions(self, slug, options):
         return await self._postHassioData(self.getSupervisorURL().with_path("addons/{0}/options".format(slug)), options)
-
-    async def updateEntity(self, entity, data):
-        await self._postHaData("states/" + entity, data)

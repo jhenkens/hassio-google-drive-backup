@@ -62,8 +62,7 @@ generational_weeks: 4
 exclude_folders: "homeassistant,ssl,share,addons/local,media"
 exclude_addons: "core_configurator"
 
-# Turn off notifications and staleness sensor
-enable_backup_stale_sensor: false
+# Turn off notifications
 notify_for_stale_backups: false
 
 # Enable server directly on port 1627
@@ -147,14 +146,6 @@ When set, excludes the comma-separated list of folders by creating a partial bac
 When set, excludes the comma-separated list of addons by creating a partial backup.
 
 _Note_: Folders and add-ons must be identified by their "slug" name. It is recommended to use the `Settings` dialog within the add-on web UI to configure partial backups since these names are esoteric and hard to find.
-
-### Option: `enable_backup_stale_sensor` (default: True)
-
-When false, the add-on will not publish the [binary_sensor.backups_stale](https://github.com/sabeechen/hassio-google-drive-backup#how-will-i-know-this-will-be-there-when-i-need-it) stale sensor.
-
-### Option: `enable_backup_state_sensor` (default: True)
-
-When false, the add-on will not publish the [sensor.backup_state](https://github.com/sabeechen/hassio-google-drive-backup#how-will-i-know-this-will-be-there-when-i-need-it) sensor.
 
 ### Option: `notify_for_stale_backups` (default: True)
 

@@ -322,7 +322,6 @@ async def test_ignored_backups(updater: HaUpdater, time: FakeTime, server: Simul
 
 @pytest.mark.asyncio
 async def test_update_backups_old_names(updater: HaUpdater, server, backup: Backup, time: FakeTime, supervisor: SimulatedSupervisor, config: Config):
-    config.override(Setting.CALL_BACKUP_SNAPSHOT, True)
     await updater.update()
     assert not updater._stale()
     assert updater._state() == "backed_up"

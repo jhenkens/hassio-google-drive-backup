@@ -177,7 +177,6 @@ class UiServer(Trigger, Startable):
         upgrade_date = self._data_cache.getUpgradeTime(VERSION_CREATION_TRACKING)
         ignored = len(list(filter(lambda s: s.date() < upgrade_date, filter(Backup.ignore, self._coord.backups()))))
         status["notify_check_ignored"] = ignored > 0 and self.ignore_other_turned_on
-        status["warn_backup_upgrade"] = self.config.get(Setting.CALL_BACKUP_SNAPSHOT) and not self._data_cache.checkFlag(UpgradeFlags.NOTIFIED_ABOUT_BACKUP_RENAME)
         status["warn_stop_addons"] = self.config.get(Setting.STOP_ADDONS) and not self._data_cache.checkFlag(UpgradeFlags.NOTIFIED_ABOUT_STOPADDONS)
         status["warn_upgrade_backups"] = self._data_cache.notifyForIgnoreUpgrades
         status["warn_oob_oauth"] = not self._data_cache.checkFlag(UpgradeFlags.NOTIFIED_ABOUT_OOB_FLOW) and self._coord._model.dest.might_be_oob_creds
@@ -488,16 +487,7 @@ class UiServer(Trigger, Startable):
         self._data_cache.saveIfDirty()
         return web.json_response({'message': 'Acknowledged'})
 
-    async def callbackupsnapshot(self, request: Request):
-        switch = BoolValidator.strToBool(request.query.get("switch", False))
 
-        if switch:
-            validated = self.config.validateUpdate({Setting.CALL_BACKUP_SNAPSHOT: False})
-            await self._updateConfiguration(validated)
-            self._data_cache.addFlag(UpgradeFlags.NOTIFIED_ABOUT_BACKUP_RENAME)
-        self._data_cache.addFlag(UpgradeFlags.NOTIFIED_ABOUT_BACKUP_RENAME)
-        self._data_cache.saveIfDirty()
-        return web.json_response({'message': 'Configuration updated'})
 
     async def ignoredbackupswitch(self, request: Request):
         switch = BoolValidator.strToBool(request.query.get("switch", False))
@@ -743,7 +733,6 @@ class UiServer(Trigger, Startable):
         self._addRoute(app, self._debug.timeoffset)
         self._addRoute(app, self.makeanissue)
         self._addRoute(app, self.ignorestartupcooldown)
-        self._addRoute(app, self.callbackupsnapshot)
         self._addRoute(app, self.ignoredbackupswitch)
         self._addRoute(app, self.ignore)
         self._addRoute(app, self.ackignorecheck)

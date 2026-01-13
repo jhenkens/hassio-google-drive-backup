@@ -7,6 +7,7 @@ from ..model import Coordinator, Backup
 from ..config import Config, Setting
 from ..util import GlobalInfo, Backoff, Estimator
 from .harequests import HaRequests
+from .integrationws import IntegrationWebSocketServer
 from ..time import Time
 from ..worker import Worker
 from ..const import SOURCE_HA, SOURCE_GOOGLE_DRIVE
@@ -33,12 +34,13 @@ REASSURING_MESSAGE = "Unable to reach Home Assistant (HTTP {0}).  This is normal
 @singleton
 class HaUpdater(Worker):
     @inject
-    def __init__(self, requests: HaRequests, coordinator: Coordinator, config: Config, time: Time, global_info: GlobalInfo):
+    def __init__(self, requests: HaRequests, coordinator: Coordinator, config: Config, time: Time, global_info: GlobalInfo, integration_ws: IntegrationWebSocketServer):
         self._config = config
         super().__init__("Sensor Updater", self.update, time, self.getInterval)
         self._time = time
         self._coordinator = coordinator
         self._requests: HaRequests = requests
+        self._integration_ws = integration_ws
         self._info = global_info
         self._notified = False
         self._backoff = Backoff(max=MAX_BACKOFF, base=FIRST_BACKOFF)
@@ -60,10 +62,14 @@ class HaUpdater(Worker):
 
     async def update(self):
         try:
-            if self._config.get(Setting.ENABLE_BACKUP_STALE_SENSOR):
-                await self._requests.updateBackupStaleSensor('on' if self._stale() else 'off')
-            if self._config.get(Setting.ENABLE_BACKUP_STATE_SENSOR):
-                await self._maybeSendBackupUpdate()
+            # Update stale sensor via WebSocket if connected
+            is_stale = self._stale()
+            await self._integration_ws.send_backup_stale(is_stale)
+            
+            # Update backup state sensor via WebSocket if connected
+            await self._maybeSendBackupUpdate()
+            
+            # Handle notifications (still uses REST API)
             if self._config.get(Setting.NOTIFY_FOR_STALE_BACKUPS):
                 if self._stale() and not self._notified:
                     if self._info.url is None or len(self._info.url) == 0:
@@ -98,10 +104,10 @@ class HaUpdater(Worker):
     async def _maybeSendBackupUpdate(self):
         update = self._buildBackupUpdate()
         if self._trigger_once or update != self._last_backup_update or self._time.now() > self.last_backup_update_time + timedelta(hours=1):
-            if self._config.get(Setting.CALL_BACKUP_SNAPSHOT):
-                await self._requests.updateEntity(OLD_BACKUP_ENTITY_NAME, update)
-            else:
-                await self._requests.updateEntity(BACKUP_ENTITY_NAME, update)
+            # Send via WebSocket
+            state = update.get("state", "unknown")
+            attributes = update.get("attributes", {})
+            await self._integration_ws.send_backup_state(state, attributes)
             self._last_backup_update = update
             self.last_backup_update_time = self._time.now()
 
@@ -149,41 +155,27 @@ class HaUpdater(Worker):
         last_uploaded = "Never"
         if len(drive_backups) > 0:
             last_uploaded = max(drive_backups, key=lambda s: s.date()).date().isoformat()
-        if self._config.get(Setting.CALL_BACKUP_SNAPSHOT):
-            return {
-                "state": self._state(),
-                "attributes": {
-                    "friendly_name": "Snapshot State",
-                    "last_snapshot": last,  # type: ignore
-                    "snapshots_in_google_drive": len(drive_backups),
-                    "snapshots_in_hassio": len(ha_backups),
-                    "snapshots_in_home_assistant": len(ha_backups),
-                    "size_in_google_drive": Estimator.asSizeString(sum(map(lambda v: v.sizeInt(), drive_backups))),
-                    "size_in_home_assistant": Estimator.asSizeString(sum(map(lambda v: v.sizeInt(), ha_backups))),
-                    "snapshots": list(map(makeBackupData, backups))
-                }
-            }
+        
+        source_metrics = self._coordinator.buildBackupMetrics()
+        next = self._coordinator.nextBackupTime()
+        if next is not None:
+            next = next.isoformat()
+        attr = {
+            "friendly_name": "Backup State",
+            "last_backup": last,  # type: ignore
+            "next_backup": next,
+            "last_uploaded": last_uploaded,
+            "backups_in_google_drive": len(drive_backups),
+            "backups_in_home_assistant": len(ha_backups),
+            "size_in_google_drive": Estimator.asSizeString(sum(map(lambda v: v.sizeInt(), drive_backups))),
+            "size_in_home_assistant": Estimator.asSizeString(sum(map(lambda v: v.sizeInt(), ha_backups))),
+            "backups": list(map(makeBackupData, backups))
+        }
+        if SOURCE_GOOGLE_DRIVE in source_metrics and 'free_space' in source_metrics[SOURCE_GOOGLE_DRIVE]:
+            attr["free_space_in_google_drive"] = source_metrics[SOURCE_GOOGLE_DRIVE]['free_space']
         else:
-            source_metrics = self._coordinator.buildBackupMetrics()
-            next = self._coordinator.nextBackupTime()
-            if next is not None:
-                next = next.isoformat()
-            attr = {
-                "friendly_name": "Backup State",
-                "last_backup": last,  # type: ignore
-                "next_backup": next,
-                "last_uploaded": last_uploaded,
-                "backups_in_google_drive": len(drive_backups),
-                "backups_in_home_assistant": len(ha_backups),
-                "size_in_google_drive": Estimator.asSizeString(sum(map(lambda v: v.sizeInt(), drive_backups))),
-                "size_in_home_assistant": Estimator.asSizeString(sum(map(lambda v: v.sizeInt(), ha_backups))),
-                "backups": list(map(makeBackupData, backups))
-            }
-            if SOURCE_GOOGLE_DRIVE in source_metrics and 'free_space' in source_metrics[SOURCE_GOOGLE_DRIVE]:
-                attr["free_space_in_google_drive"] = source_metrics[SOURCE_GOOGLE_DRIVE]['free_space']
-            else:
-                attr["free_space_in_google_drive"] = ""
-            return {
-                "state": self._state(),
-                "attributes": attr
-            }
+            attr["free_space_in_google_drive"] = ""
+        return {
+            "state": self._state(),
+            "attributes": attr
+        }

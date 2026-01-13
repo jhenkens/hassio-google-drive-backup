@@ -1,3 +1,20 @@
+## v0.113.0 [2026-01-13]
+
+- Added Home Assistant custom integration for local push updates via WebSocket
+- WebSocket server republishes latest state to clients on connection/reconnection for immediate updates
+- Fixed WebSocket server port conflict with ingress (moved from 8099 to 8100)
+- Added integration_ws_port configuration setting
+- Added enhanced connection logging for troubleshooting
+- Added integration icons for better UI display
+- Integration entities are now grouped under a device for better organization
+- Integration entities are diagnostic sensors (hidden by default in UI)
+- Added HACS support for easy integration installation
+- Added UI-based installation via config flow
+- Removed sensor enable/disable settings from addon configuration (now controlled by installing/uninstalling the integration)
+- Fixed pip installation issues by using virtual environment for all Python packages
+- Addon now builds locally on the machine instead of using prebuilt container images
+- Removed all "snapshot" vs "backup" terminology options - addon now consistently uses "backup" terminology
+
 ## v0.112.1 [2023-11-03]
 
 - Added warnings about using the "Stop Addons" feature.  I plan on removing this in the near future.  If you'd like to keep the feature around, please give your feedback in [this GitHub issue](https://github.com/sabeechen/hassio-google-drive-backup/issues/940).

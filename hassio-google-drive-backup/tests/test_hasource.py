@@ -768,7 +768,6 @@ async def test_upgrade_default_config(ha: HaSource, supervisor: SimulatedSupervi
         Setting.MAX_BACKUPS_IN_HA.value: 4,
         Setting.MAX_BACKUPS_IN_GOOGLE_DRIVE.value: 4,
         Setting.DAYS_BETWEEN_BACKUPS.value: 3,
-        Setting.CALL_BACKUP_SNAPSHOT.value: True,
     }
 
 
@@ -788,8 +787,6 @@ async def test_upgrade_all_config(ha: HaSource, supervisor: SimulatedSupervisor,
         Setting.DEPRECTAED_BACKUP_NAME.value: "test",
         Setting.DEPRECTAED_SPECIFY_BACKUP_FOLDER.value: True,
         Setting.DEPRECTAED_NOTIFY_FOR_STALE_BACKUPS.value: False,
-        Setting.DEPRECTAED_ENABLE_BACKUP_STALE_SENSOR.value: False,
-        Setting.DEPRECTAED_ENABLE_BACKUP_STATE_SENSOR.value: False,
         Setting.DEPRECATED_BACKUP_PASSWORD.value: "test password",
     }
 
@@ -809,10 +806,7 @@ async def test_upgrade_all_config(ha: HaSource, supervisor: SimulatedSupervisor,
         Setting.BACKUP_NAME.value: "test",
         Setting.SPECIFY_BACKUP_FOLDER.value: True,
         Setting.NOTIFY_FOR_STALE_BACKUPS.value: False,
-        Setting.ENABLE_BACKUP_STALE_SENSOR.value: False,
-        Setting.ENABLE_BACKUP_STATE_SENSOR.value: False,
         Setting.BACKUP_PASSWORD.value: "test password",
-        Setting.CALL_BACKUP_SNAPSHOT.value: True,
     }
 
     interceptor.clear()
@@ -847,7 +841,6 @@ async def test_upgrade_some_config(ha: HaSource, supervisor: SimulatedSupervisor
         Setting.DAYS_BETWEEN_BACKUPS.value: 3,
         Setting.EXCLUDE_ADDONS.value: "test",
         Setting.BACKUP_TIME_OF_DAY.value: "01:11",
-        Setting.CALL_BACKUP_SNAPSHOT.value: True,
     }
 
 

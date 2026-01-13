@@ -171,8 +171,7 @@ def test_config_upgrade():
     config = Config()
     config.update({Setting.DEPRECTAED_BACKUP_TIME_OF_DAY: "00:01"})
     assert (config.getAllConfig(), False) == defaultAnd({
-        Setting.BACKUP_TIME_OF_DAY: "00:01",
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.BACKUP_TIME_OF_DAY: "00:01"
     })
     assert config.mustSaveUpgradeChanges()
 
@@ -186,8 +185,7 @@ def test_config_upgrade():
     assert config.getAllConfig() == defaultAnd({
         Setting.MAX_BACKUPS_IN_HA: 20,
         Setting.MAX_BACKUPS_IN_GOOGLE_DRIVE: 21,
-        Setting.BACKUP_PASSWORD: "boop",
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.BACKUP_PASSWORD: "boop"
     })[0]
     assert config.mustSaveUpgradeChanges()
 
@@ -207,8 +205,7 @@ def test_config_upgrade():
     })
     assert config.getAllConfig() == defaultAnd({
         Setting.BACKUP_TIME_OF_DAY: "00:01",
-        Setting.EXCLUDE_ADDONS: "test",
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.EXCLUDE_ADDONS: "test"
     })[0]
     assert config.mustSaveUpgradeChanges()
 
@@ -220,8 +217,7 @@ def test_overwrite_on_upgrade():
         Setting.MAX_BACKUPS_IN_HA: 6
     })
     assert (config.getAllConfig(), False) == defaultAnd({
-        Setting.MAX_BACKUPS_IN_HA: 6,
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.MAX_BACKUPS_IN_HA: 6
     })
     assert config.mustSaveUpgradeChanges()
 
@@ -231,8 +227,7 @@ def test_overwrite_on_upgrade():
         Setting.DEPRECTAED_MAX_BACKUPS_IN_HA: 5
     })
     assert (config.getAllConfig(), False) == defaultAnd({
-        Setting.MAX_BACKUPS_IN_HA: 6,
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.MAX_BACKUPS_IN_HA: 6
     })
     assert config.mustSaveUpgradeChanges()
 
@@ -242,8 +237,7 @@ def test_overwrite_on_upgrade():
         Setting.DEPRECTAED_MAX_BACKUPS_IN_HA: 4
     })
     assert (config.getAllConfig(), False) == defaultAnd({
-        Setting.MAX_BACKUPS_IN_HA: 6,
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.MAX_BACKUPS_IN_HA: 6
     })
     assert config.mustSaveUpgradeChanges()
 
@@ -256,8 +250,7 @@ def test_overwrite_on_upgrade_default_value():
         Setting.MAX_BACKUPS_IN_HA: Setting.MAX_BACKUPS_IN_HA.default()
     })
     assert (config.getAllConfig(), False) == defaultAnd({
-        Setting.MAX_BACKUPS_IN_HA: Setting.MAX_BACKUPS_IN_HA.default() + 1,
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.MAX_BACKUPS_IN_HA: Setting.MAX_BACKUPS_IN_HA.default() + 1
     })
     assert config.mustSaveUpgradeChanges()
 
@@ -267,8 +260,7 @@ def test_overwrite_on_upgrade_default_value():
         Setting.DEPRECTAED_MAX_BACKUPS_IN_HA: Setting.MAX_BACKUPS_IN_HA.default() + 1
     })
     assert (config.getAllConfig(), False) == defaultAnd({
-        Setting.MAX_BACKUPS_IN_HA: Setting.MAX_BACKUPS_IN_HA.default() + 1,
-        Setting.CALL_BACKUP_SNAPSHOT: True
+        Setting.MAX_BACKUPS_IN_HA: Setting.MAX_BACKUPS_IN_HA.default() + 1
     })
     assert config.mustSaveUpgradeChanges()
 

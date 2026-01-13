@@ -25,7 +25,6 @@ VERSION_DEFUALT_IGNORE_UPGRADES = Version.parse("0.108.2")
 
 @unique
 class UpgradeFlags(Enum):
-    NOTIFIED_ABOUT_BACKUP_RENAME = "notified_backup_rename"
     NOTIFIED_ABOUT_IGNORED_BACKUPS = "notified_ignored_backups"
     NOTIFIED_ABOUT_OOB_FLOW = "notified_about_oob_flow"
     NOTIFIED_ABOUT_STOPADDONS = "notified_stop_addons"

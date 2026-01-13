@@ -28,11 +28,9 @@ class Setting(Enum):
     BACKUP_TIME_OF_DAY = "backup_time_of_day"
     SPECIFY_BACKUP_FOLDER = "specify_backup_folder"
     NOTIFY_FOR_STALE_BACKUPS = "notify_for_stale_backups"
-    ENABLE_BACKUP_STALE_SENSOR = "enable_backup_stale_sensor"
-    ENABLE_BACKUP_STATE_SENSOR = "enable_backup_state_sensor"
+
     BACKUP_PASSWORD = "backup_password"
     BACKUP_STORAGE = "backup_storage"
-    CALL_BACKUP_SNAPSHOT = "call_backup_snapshot"
 
     # Basic backup settings
     WARN_FOR_LOW_SPACE = "warn_for_low_space"
@@ -63,6 +61,7 @@ class Setting(Enum):
     KEYFILE = "keyfile"
     INGRESS_PORT = "ingress_port"
     PORT = "port"
+    INTEGRATION_WS_PORT = "integration_ws_port"
     REQUIRE_LOGIN = "require_login"
     EXPOSE_EXTRA_SERVER = "expose_extra_server"
 
@@ -149,8 +148,6 @@ class Setting(Enum):
     DEPRECTAED_SPECIFY_BACKUP_FOLDER = "specify_snapshot_folder"
     DEPRECTAED_DELETE_BEFORE_NEW_BACKUP = "delete_before_new_snapshot"
     DEPRECTAED_NOTIFY_FOR_STALE_BACKUPS = "notify_for_stale_snapshots"
-    DEPRECTAED_ENABLE_BACKUP_STALE_SENSOR = "enable_snapshot_stale_sensor"
-    DEPRECTAED_ENABLE_BACKUP_STATE_SENSOR = "enable_snapshot_state_sensor"
 
     UPLOAD_LIMIT_BYTES_PER_SECOND = "upload_limit_bytes_per_second"
 
@@ -178,8 +175,7 @@ _DEFAULTS = {
     Setting.BACKUP_TIME_OF_DAY: "",
     Setting.SPECIFY_BACKUP_FOLDER: False,
     Setting.NOTIFY_FOR_STALE_BACKUPS: True,
-    Setting.ENABLE_BACKUP_STALE_SENSOR: True,
-    Setting.ENABLE_BACKUP_STATE_SENSOR: True,
+
     Setting.BACKUP_PASSWORD: "",
     Setting.BACKUP_STORAGE: "",
     Setting.WATCH_BACKUP_DIRECTORY: True,
@@ -199,7 +195,6 @@ _DEFAULTS = {
     Setting.LOW_SPACE_THRESHOLD: 1024 * 1024 * 1024,
     Setting.DELETE_AFTER_UPLOAD: False,
     Setting.DEPRECTAED_DELETE_BEFORE_NEW_BACKUP: False,
-    Setting.CALL_BACKUP_SNAPSHOT: False,
 
     # Generational backup settings
     Setting.GENERATIONAL_DAYS: 0,
@@ -228,11 +223,11 @@ _DEFAULTS = {
     Setting.KEYFILE: "/ssl/privkey.pem",
     Setting.INGRESS_PORT: 8099,
     Setting.PORT: 1627,
+    Setting.INTEGRATION_WS_PORT: 8100,
 
     # Add-on options
     Setting.DEPRECTAED_NOTIFY_FOR_STALE_BACKUPS: True,
-    Setting.DEPRECTAED_ENABLE_BACKUP_STALE_SENSOR: True,
-    Setting.DEPRECTAED_ENABLE_BACKUP_STATE_SENSOR: True,
+
     Setting.SEND_ERROR_REPORTS: False,
     Setting.VERBOSE: False,
     Setting.CONFIRM_MULTIPLE_DELETES: True,
@@ -322,8 +317,7 @@ _CONFIG = {
     Setting.BACKUP_TIME_OF_DAY: "match(^[0-2]\\d:[0-5]\\d$)?",
     Setting.SPECIFY_BACKUP_FOLDER: "bool?",
     Setting.NOTIFY_FOR_STALE_BACKUPS: "bool?",
-    Setting.ENABLE_BACKUP_STALE_SENSOR: "bool?",
-    Setting.ENABLE_BACKUP_STATE_SENSOR: "bool?",
+
     Setting.BACKUP_PASSWORD: "str?",
     Setting.BACKUP_STORAGE: "str?",
     Setting.WATCH_BACKUP_DIRECTORY: "bool?",
@@ -343,7 +337,6 @@ _CONFIG = {
     Setting.LOW_SPACE_THRESHOLD: "int(0,)?",
     Setting.DELETE_AFTER_UPLOAD: "bool?",
     Setting.DEPRECTAED_DELETE_BEFORE_NEW_BACKUP: "bool?",
-    Setting.CALL_BACKUP_SNAPSHOT: "bool?",
 
     # Generational backup settings
     Setting.GENERATIONAL_DAYS: "int(0,)?",
@@ -371,11 +364,11 @@ _CONFIG = {
     Setting.KEYFILE: "str?",
     Setting.INGRESS_PORT: "int(0,)?",
     Setting.PORT: "int(0,)?",
+    Setting.INTEGRATION_WS_PORT: "int(0,)?",
 
     # Add-on options
     Setting.DEPRECTAED_NOTIFY_FOR_STALE_BACKUPS: "bool?",
-    Setting.DEPRECTAED_ENABLE_BACKUP_STALE_SENSOR: "bool?",
-    Setting.DEPRECTAED_ENABLE_BACKUP_STATE_SENSOR: "bool?",
+
     Setting.SEND_ERROR_REPORTS: "bool?",
     Setting.VERBOSE: "bool?",
     Setting.CONFIRM_MULTIPLE_DELETES: "bool?",

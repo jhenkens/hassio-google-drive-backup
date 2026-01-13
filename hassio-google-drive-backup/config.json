@@ -1,10 +1,10 @@
 {
   "name": "Home Assistant Google Drive Backup",
-  "version": "0.112.1",
+  "version": "0.113.0",
   "slug": "hassio_google_drive_backup",
   "description": "Automatically manage backups between Home Assistant and Google Drive",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
-  "url": "https://github.com/sabeechen/hassio-google-drive-backup",
+  "url": "https://github.com/jhenkens/hassio-google-drive-backup",
   "homeassistant_api": true,
   "hassio_api": true,
   "hassio_role": "admin",
@@ -51,8 +51,7 @@
     "generational_delete_early": "bool?",
 
     "notify_for_stale_backups": "bool?",
-    "enable_backup_stale_sensor": "bool?",
-    "enable_backup_state_sensor": "bool?",
+
     "send_error_reports": "bool?",
     "backup_password": "str?",
     "exclude_folders": "str?",
@@ -68,7 +67,7 @@
     "google_drive_timeout_seconds": "float(1,)?",
     "alternate_dns_servers": "match(^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})(,[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})*$)?",
     "enable_drive_upload": "bool?",
-    "call_backup_snapshot": "bool?",
+
 
     "background_color": "match(^(#[0-9ABCDEFabcdef]{6}|)$)?",
     "accent_color": "match(^(#[0-9ABCDEFabcdef]{6}|)$)?",
@@ -92,11 +91,10 @@
     "snapshot_time_of_day": "match(^[0-2]\\d:[0-5]\\d$)?",
     "specify_snapshot_folder": "bool?",
     "notify_for_stale_snapshots": "bool?",
-    "enable_snapshot_stale_sensor": "bool?",
-    "enable_snapshot_state_sensor": "bool?",
     "snapshot_password": "str?",
     "maximum_upload_chunk_bytes": "float(262144,)?",
     "ha_reporting_interval_seconds": "int(1,)?",
+    "integration_ws_port": "int(0,)?",
 
     "upload_limit_bytes_per_second": "float(0,)?"
   },
@@ -105,6 +103,5 @@
   },
   "ports_description": {
     "1627/tcp": "Direct access to the add-on without ingress.  Must be enabled in the settings, see 'expose_extra_server'."
-  },
-  "image": "ghcr.io/sabeechen/hassio-google-drive-backup-{arch}"
+  }
 }
