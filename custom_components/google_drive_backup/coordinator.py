@@ -16,7 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "google_drive_backup"
 
-RECONNECT_DELAY = 5  # seconds
+RECONNECT_DELAY = 60  # seconds
 PING_INTERVAL = 30  # seconds
 PING_TIMEOUT = 10  # seconds
 
@@ -33,7 +33,8 @@ class GoogleDriveBackupCoordinator:
         self._session: aiohttp.ClientSession | None = None
         self._running = False
         self._task: asyncio.Task | None = None
-        
+        self._ever_connected = False
+
         # State storage
         self._backup_state: dict[str, Any] = {"state": "unknown", "attributes": {}}
         self._backup_stale = False
@@ -110,14 +111,19 @@ class GoogleDriveBackupCoordinator:
                     self._connected = False
                     self._notify_availability_changed()
                 
-                _LOGGER.info("Reconnecting to addon in %s seconds...", RECONNECT_DELAY)
+                if self._ever_connected:
+                    _LOGGER.info("Reconnecting to addon in %s seconds...", RECONNECT_DELAY)
+                else:
+                    _LOGGER.debug("Addon unavailable, will retry in %s seconds...", RECONNECT_DELAY)
                 await asyncio.sleep(RECONNECT_DELAY)
 
     async def _connect_and_listen(self) -> None:
         """Connect to WebSocket and listen for messages."""
         url = f"http://{self.host}:{self.port}/ws"
-        _LOGGER.info("Attempting to connect to Google Drive Backup addon at %s", url)
-        _LOGGER.debug("Connection details - host: %s, port: %s", self.host, self.port)
+        if self._ever_connected:
+            _LOGGER.info("Attempting to connect to Google Drive Backup addon at %s", url)
+        else:
+            _LOGGER.debug("Attempting to connect to Google Drive Backup addon at %s", url)
         
         try:
             async with self._session.ws_connect(
@@ -127,6 +133,7 @@ class GoogleDriveBackupCoordinator:
             ) as ws:
                 self._ws = ws
                 self._connected = True
+                self._ever_connected = True
                 self._notify_availability_changed()
                 _LOGGER.info("Successfully connected to Google Drive Backup addon WebSocket")
                 
@@ -142,9 +149,15 @@ class GoogleDriveBackupCoordinator:
                         break
         
         except aiohttp.ClientError as err:
-            _LOGGER.warning("Connection error to %s: %s", url, err)
+            if self._ever_connected:
+                _LOGGER.warning("Connection error to %s: %s", url, err)
+            else:
+                _LOGGER.debug("Addon not yet reachable at %s: %s", url, err)
         except asyncio.TimeoutError:
-            _LOGGER.warning("Connection timeout to %s", url)
+            if self._ever_connected:
+                _LOGGER.warning("Connection timeout to %s", url)
+            else:
+                _LOGGER.debug("Addon not yet reachable at %s (timeout)", url)
         except Exception as err:
             _LOGGER.error("Unexpected error connecting to %s: %s", url, err, exc_info=True)
         finally:
